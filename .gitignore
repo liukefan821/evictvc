@@ -1,0 +1,16 @@
+/rust/target/
+**/*.rs.bk
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.bbl
+*.blg
+.DS_Store

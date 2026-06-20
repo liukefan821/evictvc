@@ -1,0 +1,29 @@
+[package]
+name = "evictvc"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ark-bls12-381 = "0.4"
+ark-ec = "0.4"
+ark-ff = "0.4"
+ark-poly = "0.4"
+ark-std = "0.4"
+
+# --- Optional tweaks ---
+# If you are on Rust < 1.80, add these pins (some newer transitive deps need newer Rust):
+#   zeroize_derive = "=1.4.2"
+#   zerocopy = "=0.7.35"
+#   zerocopy-derive = "=0.7.35"
+#   ppv-lite86 = "=0.2.17"
+#
+# To use ALL CPU cores (recommended for n >= 2^16), enable parallel features:
+#   ark-ec   = { version = "0.4", features = ["parallel"] }
+#   ark-ff   = { version = "0.4", features = ["parallel"] }
+#   ark-poly = { version = "0.4", features = ["parallel"] }
+#   ark-std  = { version = "0.4", features = ["parallel"] }
+#   rayon = "1"
+# then add `use rayon::prelude::*;` and change `powers.iter()` to `powers.par_iter()` in setup().
+
+[profile.release]
+opt-level = 3

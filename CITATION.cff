@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use EvictVC in your research, please cite the paper below."
+title: "EvictVC: Evictable Vector Commitments"
+abstract: >-
+  A vector-commitment primitive supporting permanent, policy-checked deletion of
+  committed positions with a tamper-evident deletion history, for verifiable LLM
+  inference under KV-cache eviction. Includes a Python reference implementation and
+  a high-performance Rust backend over BLS12-381.
+type: software
+authors:
+  - family-names: "Liu"
+    given-names: "Kefan"
+    # orcid: "https://orcid.org/0000-0000-0000-0000"
+repository-code: "https://github.com/<your-github-username>/evictvc"
+license: MIT
+version: "1.0.0"
+date-released: "2026-06-20"
+keywords:
+  - vector commitments
+  - KZG polynomial commitments
+  - verifiable computation
+  - machine-learning inference
+  - KV-cache compression
+preferred-citation:
+  type: article
+  title: "Evictable Vector Commitments: Verifiable LLM Inference under KV-Cache Eviction"
+  year: 2026
+  authors:
+    - family-names: "Liu"
+      given-names: "Kefan"
+  # url: "https://eprint.iacr.org/2026/XXXX"
