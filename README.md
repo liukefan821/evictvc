@@ -2,6 +2,7 @@
 
 > **Verifiable LLM inference under KV-cache eviction.**
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20773783.svg)](https://doi.org/10.5281/zenodo.20773783)
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Paper: ePrint](https://img.shields.io/badge/paper-ePrint-b31b1b.svg)
 ![Backend: ark--bls12--381](https://img.shields.io/badge/Rust-ark--bls12--381-orange.svg)

@@ -12,8 +12,9 @@ authors:
     given-names: "Kefan"
     # orcid: "https://orcid.org/0000-0000-0000-0000"
 repository-code: "https://github.com/liukefan821/evictvc"
+doi: "10.5281/zenodo.20773783"
 license: MIT
-version: "1.0.0"
+version: "1.1.0"
 date-released: "2026-06-20"
 keywords:
   - vector commitments
