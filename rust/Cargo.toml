@@ -2,6 +2,7 @@
 name = "evictvc"
 version = "0.1.0"
 edition = "2021"
+default-run = "evictvc"
 
 [dependencies]
 ark-bls12-381 = "0.4"
