@@ -14,3 +14,7 @@ venv/
 *.bbl
 *.blg
 .DS_Store
+
+# iacrcc.cls build artifacts (metadata extraction for the IACR pipeline)
+*.meta
+*.abstract
