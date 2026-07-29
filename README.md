@@ -57,23 +57,41 @@ positions.
 
 ```
 evictvc/
-├── paper/                 Preprint (source + PDF) and figure
-│   ├── evictvc.pdf
-│   ├── evictvc.tex
-│   └── evictvc_fig1.png
+├── paper/
+│   ├── submitted-cic2026_3/   Frozen: the exact source and PDF sent for review
+│   │   ├── evictvc_iacrcc_submission.tex
+│   │   ├── evictvc_iacrcc_submission.pdf
+│   │   ├── evictvc_fig1.png
+│   │   └── README.md
+│   ├── revision/              Working copy; BibTeX bibliography, preprint build
+│   │   ├── evictvc_rev.tex        Revision, still version=submission
+│   │   ├── evictvc_preprint.tex   version=preprint, named, ORCID/e-mail/ROR
+│   │   ├── evictvc_rev.pdf
+│   │   ├── evictvc_preprint.pdf
+│   │   ├── biblio.bib             References CryptoBib does not carry
+│   │   ├── abbrev3.bib            CryptoBib, github.com/cryptobib/export @84bfd10
+│   │   ├── crypto.bib             (both needed: crypto.bib uses abbrev3 macros)
+│   │   ├── iacrcc.cls             IACR class, vendored for self-contained builds
+│   │   ├── evictvc_fig1.png
+│   │   ├── build.sh
+│   │   └── README.md
+│   └── drafts/                Superseded; kept for the record
+│       ├── evictvc-article-draft-2026-06.tex   Pre-iacrcc article-class draft
+│       ├── evictvc-article-draft-2026-06.pdf
+│       └── evictvc_fig1.png
 ├── python/                Reference implementation (clarity over speed)
 │   ├── kzg_vc.py          KZG vector commitment, O(1) update
 │   ├── evictvc.py         Eviction, policy check, hash-chain history, subvector openings
 │   └── requirements.txt
-├── rust/                  evictvc-rs: high-performance backend
-│   ├── src/
-│   │   ├── main.rs        Maintenance benchmark (commit / update / evict / verify)
-│   │   └── bin/fk.rs      Feist–Khovratovich all-proofs benchmark
-│   ├── Cargo.toml
-│   ├── Cargo.lock
-│   └── rust-toolchain.toml
-└── benchmarks/
-    └── results/           Raw timing CSVs reported in the paper
+└── rust/                  evictvc-rs: high-performance backend
+    ├── src/
+    │   ├── lib.rs         Core crate: KZG VC over roots of unity, O(1) eviction,
+    │   │                  Feist-Khovratovich amortized all-proofs
+    │   ├── main.rs        Maintenance benchmark harness (commit/update/evict/verify)
+    │   └── bin/fk.rs      Feist-Khovratovich all-proofs benchmark harness
+    ├── Cargo.toml
+    ├── Cargo.lock
+    └── rust-toolchain.toml
 ```
 
 ---
@@ -122,9 +140,11 @@ cargo run --release --features parallel -- 16
 - **Maintenance table (update O(1), verify constant):** `rust/`, `cargo run --release -- 16`.
 - **Amortized all-proofs table (FK vs naïve):** `rust/`, `cargo run --release --bin fk -- 16`.
 
-Raw numbers from the reference machine are in `benchmarks/results/`. Absolute timings
-depend on hardware; the *asymptotic* behavior (flat update cost, constant proof size,
-O(n log n) all-proofs) is hardware-independent.
+The timings in Tables 1 and 2 were read off the standard output of these harnesses on
+an Apple M-series laptop, single-threaded, release build; they were not written to
+files, so no raw CSVs are distributed here. Absolute timings depend on hardware. The
+*asymptotic* behavior (flat update cost, constant proof size, O(n log n) all-proofs)
+is what should reproduce.
 
 ---
 
