@@ -79,6 +79,8 @@ evictvc/
 │       ├── evictvc-article-draft-2026-06.tex   Pre-iacrcc article-class draft
 │       ├── evictvc-article-draft-2026-06.pdf
 │       └── evictvc_fig1.png
+├── benchmarks/
+│   └── results/           Verbatim stdout from a later re-run of both harnesses
 ├── python/                Reference implementation (clarity over speed)
 │   ├── kzg_vc.py          KZG vector commitment, O(1) update
 │   ├── evictvc.py         Eviction, policy check, hash-chain history, subvector openings
@@ -141,10 +143,11 @@ cargo run --release --features parallel -- 16
 - **Amortized all-proofs table (FK vs naïve):** `rust/`, `cargo run --release --bin fk -- 16`.
 
 The timings in Tables 1 and 2 were read off the standard output of these harnesses on
-an Apple M-series laptop, single-threaded, release build; they were not written to
-files, so no raw CSVs are distributed here. Absolute timings depend on hardware. The
-*asymptotic* behavior (flat update cost, constant proof size, O(n log n) all-proofs)
-is what should reproduce.
+an Apple M-series laptop, single-threaded, release build, and were not written to files
+at the time. `benchmarks/results/` holds a later re-run of both harnesses on the same
+machine, captured verbatim; the README there records the toolchain and the exact
+commands. Absolute timings depend on hardware. The *asymptotic* behavior (flat update
+cost, constant proof size, O(n log n) all-proofs) is what should reproduce.
 
 ---
 

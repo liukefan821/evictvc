@@ -1,0 +1,12 @@
+    Finished `release` profile [optimized] target(s) in 0.03s
+     Running `target/release/evictvc 16`
+correctness: OK  (open verifies, tamper rejected, O(1) update consistent)
+
+n           setup(ms)   commit(ms)   update(us)     open(ms)   verify(ms)
+2^10           169.20        18.59      145.095        19.43         2.61
+2^11           314.32        34.61      128.412        34.47         2.59
+2^12           631.59        60.84      129.337        59.44         2.55
+2^13          1271.03       112.52      136.910       110.18         2.59
+2^14          2531.88       203.44      138.447       201.55         2.59
+2^15          5025.23       374.54      146.749       372.55         2.60
+2^16         10056.55       701.12      139.796       710.92         2.56
