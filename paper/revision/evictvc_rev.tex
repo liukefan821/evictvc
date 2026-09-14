@@ -167,6 +167,19 @@ maintainable in quasi-linear total time.
         whole-cache proof generation practical (Section~\ref{sec:eval}).
 \end{itemize}
 
+\paragraph{Scope.}
+EvictVC is a commitment primitive, not an end-to-end verifiable-inference
+system. It takes the initial value and score commitments as given and certifies
+the trajectory that follows: which positions were removed, under which policy
+and threshold, carrying which values, and in what order. Whether $\mathbf{v}$
+and $\mathbf{s}$ are in fact the key/value states and attention scores the model
+computed lies outside the primitive; establishing that is the task of the
+verifiable-inference layer surveyed in Section~\ref{sec:related}, with which
+EvictVC composes by sharing the commitment. The distinction bears on what an
+audit yields: an auditor who accepts every eviction in a trajectory learns that
+the compression followed the stated policy, not that the state being compressed
+was correct.
+
 \paragraph{Organization.}
 Section~\ref{sec:related} surveys related work. Sections~\ref{sec:prelim}--\ref{sec:secmodel}
 develop the model. Sections~\ref{sec:kzgvc}--\ref{sec:construction} give the
