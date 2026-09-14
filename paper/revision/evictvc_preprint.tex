@@ -330,9 +330,23 @@ only low-attention positions''. We write $\Pol_\tau(s)$ for $\Pol(\tau,s)$.
 
 \begin{remark}
 The threshold policy captures per-position eligibility, the regime our
-construction proves secure. Set-relative policies (e.g.\ ``evict the $\arg\min$''
-or ``bottom-$k$'') additionally require a verifiable minimality/sorting argument
-over the committed score vector; we treat these as an extension
+construction proves secure. The binding restriction is per-position rather than
+threshold: the definition admits any efficiently computable antitone predicate,
+and $\Pol_{<}$ is named only as the canonical instance.
+
+Set-relative policies reduce to the per-position case once the threshold may
+depend on the committed scores. Writing $s_{(1)}\le\dots\le s_{(m)}$ for the
+scores of the live positions in sorted order, evicting the $k$ lowest is
+$\Pol_{<}$ at $\tau=s_{(k+1)}$: the two agree exactly when the scores are
+distinct, and at a boundary tie $s_{(k)}=s_{(k+1)}$ the threshold form removes
+the positions strictly below, which is the part bottom-$k$ leaves unspecified.
+What the reduction does not supply is a proof that the announced $\tau$ is that
+order statistic; in the syntax below the threshold is supplied to eviction
+verification rather than derived from the score commitment. Binding it would
+require committing to a sorted permutation of the score vector and proving both
+the permutation and the sortedness, or proving that exactly $k$ live scores lie
+below $\tau$---comparison or range arguments that KZG openings do not
+themselves provide. We treat set-relative policies as an extension
 (Section~\ref{sec:conc}).
 \end{remark}
 
@@ -789,9 +803,11 @@ binding on $\Cval$. Apply Lemma~\ref{lem:posbind}.
 
 \begin{remark}
 Checks (a) and (d) together pin down the post-eviction state: $\hat v$ is the
-unique committed value at $i$ and $\Cval'=\Cval-\hat v L_i$, so position $i$ is
-provably zeroed and cannot later be opened to a nonzero value. Eviction is a
-genuine, irreversible deletion, not a relabelling.
+unique committed value at $i$ and $\Cval'=\Cval-\hat v L_i$, so position $i$
+holds zero in $\Cval'$. The checks cover that step alone; a commitment published
+later may differ from $\Cval'$ at $i$, and what carries irreversibility across
+the trajectory is $\Evicted$ together with the liveness check in $\Vfy$
+(Remark~\ref{rem:live}).
 \end{remark}
 
 \subsection{History tamper-evidence}
