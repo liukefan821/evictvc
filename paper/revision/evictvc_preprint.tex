@@ -225,9 +225,39 @@ positions, whereas EvictVC's subvector audits are constant-size and aggregatable
 Vector commitments with position binding were formalized by Catalano and
 Fiore~\cite{PKC:CatFio13}; subsequent work added single-element subvector openings and
 cross-commitment aggregation~\cite{SCN:TABDFK20} as well as efficient local updates.
-EvictVC extends this lineage with a deletion-style, policy-checked eviction
-operation and an append-only, tamper-evident history, while reusing
-single-element subvector openings to make batch audits constant-size.
+We reuse single-element subvector openings to make batch audits constant-size.
+
+Removing a position by updating it to zero is not new, and we do not claim it.
+Catalano and Fiore already do exactly this: their universal dynamic accumulator
+from vector commitments realises $\mathsf{Acc.Remove}$ as an update of position
+$i$ from $1$ to $0$~\cite[\S6.1]{PKC:CatFio13}. What that construction does not
+provide is what EvictVC adds. Its removal carries no precondition---the
+accumulator's secret key is the empty string, so any holder of the state can
+remove any element---it leaves no record of which removals occurred, and its
+security notions are silent about them: position binding quantifies over two
+openings at one position, and the accumulator's set binding treats the removals
+requested through the oracle as defining the true set rather than asking whether
+each was permitted. Table~\ref{tab:vccmp} states the comparison.
+
+\begin{table}[t]\centering
+\renewcommand{\arraystretch}{1.1}
+\small
+\begin{tabular}{@{}llll@{}}
+\toprule
+ & VC~\cite{PKC:CatFio13} & UDA~\cite[\S6.1]{PKC:CatFio13} & EvictVC \\
+\midrule
+Removing $i$        & ---              & $\mathsf{Update}(i,1\!\to\!0)$ & $\Evict(i,\tau)$ \\
+Precondition        & none             & none              & $\Pol_\tau(s_i)=1$, public \\
+State afterwards    & ---              & live, value $0$   & in $\Evicted$; $\Vfy$ rejects \\
+Record kept         & none             & none              & chain $\eta$, epoch $t$ \\
+Covered by security & position binding & set binding only  & Defs.~\ref{def:evsnd}--\ref{def:histte} \\
+\bottomrule
+\end{tabular}
+\caption{EvictVC against the vector-commitment lineage it builds on. The update
+mechanism is inherited; the precondition, the live/evicted distinction, and the
+committed record of the operation sequence are what the security model adds.}
+\label{tab:vccmp}
+\end{table}
 
 \paragraph{KV-cache compression.}
 Streaming cache compressors permanently evict the key/value states of
