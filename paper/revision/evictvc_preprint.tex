@@ -338,8 +338,10 @@ A commitment is a tuple $C=(\Cval,\Csc,\eta,t)$, where $\Cval$ commits to the
 $\eta\in\bit^{\secpar}$ is the \emph{eviction-history digest}, and
 $t\in\mathbb{N}$ is the \emph{epoch} (number of evictions so far). The evicted
 set $\Evicted\subseteq[n]$ (with live set $\Live=[n]\setminus\Evicted$) is public
-metadata, updated by verified evictions. Committer state $\aux$ holds the
-vectors, $\Live$, and $t$.
+metadata. A verifier initialises $\Evicted\leftarrow\emptyset$ at $\Commit$ and
+sets $\Evicted\leftarrow\Evicted\cup\{i\}$ on every eviction it has accepted, so
+$\Evicted$ grows monotonically on the verifier's side and is never supplied by
+the prover. Committer state $\aux$ holds the vectors, $\Live$, and $t$.
 
 \paragraph{History digest.}
 For an ordered eviction log $\Log=(r_1,\dots,r_\ell)$ with records
@@ -364,7 +366,8 @@ $\Pi=(\Setup,\Commit,\Open,\Vfy,\Update,\Evict,\VfyEvict)$:
       $C=(\Cval,\Csc,\eta_0,0)$ with $\Live=[n]$ and committer state $\aux$.
 \item[$\Open(\pp,\aux,S)\to\pi$.] For $S\subseteq\Live$, outputs a proof for the
       live values $\{v_i\}_{i\in S}$.
-\item[$\Vfy(\pp,C,S,\{v_i\}_{i\in S},\pi)\to\bit$.] Verifies against $\Cval$.
+\item[$\Vfy(\pp,C,\Evicted,S,\{v_i\}_{i\in S},\pi)\to\bit$.] Outputs $1$ iff
+      $S\cap\Evicted=\emptyset$ and the claimed values verify against $\Cval$.
 \item[$\Update(\pp,\aux,i,\delta)\to(C',\aux')$.] For $i\in\Live$, replaces $v_i$
       by $v_i+\delta$, sets $\Cval'\leftarrow\VC.\Update(\pp,\Cval,i,\delta)$,
       leaving $\Csc,\eta,t$ unchanged.
@@ -391,6 +394,17 @@ cannot be justified by another position $j\neq i$'s score; this binding is
 syntactic and needs no computational assumption.
 \end{remark}
 
+\begin{remark}[Why $\Vfy$ consults $\Evicted$]\label{rem:live}
+$\Evict$ leaves $\Cval$ committing to a vector whose $i$-th entry is $0$, so an
+opening of an evicted position to $0$ satisfies $\VC.\Vfy$. Consulting $\Evicted$
+separates ``the live value is $0$'' from ``the position is gone''. It also rules
+out reinstatement: a prover may add $\delta L_i$ to $\Cval$ for $i\in\Evicted$,
+and since $L_i$ vanishes at every other evaluation point this leaves openings at
+live positions unchanged, so no check on $\Cval$ alone detects it. The check
+$S\cap\Evicted=\emptyset$ rejects such positions, $\Evicted$ being maintained by
+the verifier and monotone.
+\end{remark}
+
 \subsection{Correctness}
 
 \begin{definition}[Correctness]\label{def:correct}
@@ -400,7 +414,8 @@ and every $\Evict$ targets $i$ with $\Pol_\tau(s_i)=1$ for the supplied $\tau$.
 $\Pi$ is \emph{correct} if for all $\secpar,n$, all
 $(\mathbf{v},\mathbf{s})$, and all admissible executions, with probability $1$
 over $\pp\leftarrow\Setup(1^\secpar,1^n)$: \emph{(i)} for every $S\subseteq\Live$,
-$\Vfy(\pp,C,S,\{v_i\}_{i\in S},\Open(\pp,\aux,S))=1$; and \emph{(ii)} every
+$\Vfy(\pp,C,\Evicted,S,\{v_i\}_{i\in S},\Open(\pp,\aux,S))=1$, and $\Vfy$
+outputs $0$ on every $S$ with $S\cap\Evicted\neq\emptyset$; and \emph{(ii)} every
 $\Evict(\pp,\aux,i,\tau)\neq\bot$ producing $(C',\aux',\omega_i)$ satisfies
 $\VfyEvict(\pp,C,i,\tau,\omega_i,C')=1$.
 \end{definition}
@@ -605,7 +620,8 @@ Fix a collision-resistant $\hash:\bit^{*}\to\bit^{\secpar}$ and policy $\Pol$.
       $\Csc\leftarrow\VC.\Commit(\pp,\mathbf{s})$,
       $\eta_0\leftarrow\hash(\langle\textsf{genesis}\rangle)$, $t\leftarrow0$,
       $\Live\leftarrow\{0,\dots,n-1\}$; output $C=(\Cval,\Csc,\eta_0,0)$, $\aux$.
-\item[$\Open/\Vfy$.] $\VC.\Open$ / $\VC.\Vfy_{\Val}$ on $\Cval$.
+\item[$\Open/\Vfy$.] $\VC.\Open$ on $\Cval$; $\Vfy$ rejects if
+      $S\cap\Evicted\neq\emptyset$, otherwise runs $\VC.\Vfy_{\Val}$ on $\Cval$.
 \item[$\Update(\pp,\aux,i,\delta)$.]
       $\Cval'\leftarrow\VC.\Update(\pp,\Cval,i,\delta)$, $v_i\mathrel{+}=\delta$.
 \item[$\Evict(\pp,\aux,i,\tau_{\!p})$.] If $\Pol_{\tau_{\!p}}(s_i)=0$ output
@@ -635,7 +651,8 @@ $\Pi_{\mathsf{KZG}}$ satisfies Definition~\ref{def:correct}.
 \emph{(i)} At every state $\Cval=\gone{\phi(\tau)}$ for the interpolant $\phi$ of
 the current value vector: $\Commit$ establishes this, $\Update$ preserves it and
 $\Evict$ zeroes position $i$, both by Lemma~\ref{lem:update}; hence any
-$S\subseteq\Live$ verifies by Lemma~\ref{lem:open}. \emph{(ii)} If
+$S\subseteq\Live$ verifies by Lemma~\ref{lem:open}, and $\Vfy$ rejects any $S$
+meeting $\Evicted$ before it consults $\Cval$. \emph{(ii)} If
 $\Evict\neq\bot$ then $\Pol_{\tau_{\!p}}(s_i)=1$; checks (a),(b) hold by
 Lemma~\ref{lem:open}, (c) by eligibility, (d) since $\Cval'=\Cval-v_iL_i$ and
 $\Csc$ is unchanged, and (e) since $\eta',t'$ were produced by the same step
