@@ -164,6 +164,13 @@ def verify_subvector(C, idxs, ys_S, proof, pp):
     rC = g1_multiexp(r, pp["srs1"]); ZC2 = g2_multiexp(Z, pp["srs2"])
     return pairing(pp["g2_one"], add(C, neg(rC))) == pairing(ZC2, proof)
 
+def verify_live(C_state, evicted, idxs, ys_S, proof, pp):
+    """EvictVC-level Verify: reject an audited set that meets the evicted set,
+    then check the subvector opening against the live commitment."""
+    if set(idxs) & set(evicted):
+        return False
+    return verify_subvector(C_state, idxs, ys_S, proof, pp)
+
 def same_point(P, Q): return normalize(P) == normalize(Q)
 
 # ===================== tamper-evident eviction history =====================
@@ -273,6 +280,18 @@ if __name__ == "__main__":
     ev_t = dict(ev); ev_t["value"] = (ev["value"]+1) % R
     okt, msgt = verify_eviction(C_state, C_score, head, i, ev_t, threshold, C2, head2, pp, epoch)
     print(f"[tamper evicted value]              verify: {okt}  ({msgt})")
+
+    # position i now holds 0 in C2; the VC layer accepts that opening, the
+    # EvictVC layer consults the evicted set.
+    evicted = {i}
+    post_vec = list(state_vec); post_vec[i] = 0
+    ys_i, proof_i = open_subvector(post_vec, [i], pp)
+    print(f"[open evicted {i} as 0]  VC layer: {verify_subvector(C2, [i], ys_i, proof_i, pp)}"
+          f"   EvictVC layer: {verify_live(C2, evicted, [i], ys_i, proof_i, pp)}")
+    k = 0                                             # a live position
+    ys_k, proof_k = open_subvector(post_vec, [k], pp)
+    print(f"[open live {k}]          VC layer: {verify_subvector(C2, [k], ys_k, proof_k, pp)}"
+          f"   EvictVC layer: {verify_live(C2, evicted, [k], ys_k, proof_k, pp)}")
 
     print("\n" + "="*64)
     print("PART 2a  KZG subvector proof is ONE element regardless of k")

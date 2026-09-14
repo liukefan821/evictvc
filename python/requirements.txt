@@ -1,1 +1,2 @@
-numpy
+py_ecc
+matplotlib
